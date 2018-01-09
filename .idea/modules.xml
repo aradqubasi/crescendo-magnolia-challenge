@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/crescendo-magnolia-challenge/crescendo-magnolia-challenge.iml" filepath="$PROJECT_DIR$/crescendo-magnolia-challenge/crescendo-magnolia-challenge.iml" />
+      <module fileurl="file://$PROJECT_DIR$/crescendo-magnolia-challenge/crescendo-magnolia-challenge-core/crescendo-magnolia-challenge-core.iml" filepath="$PROJECT_DIR$/crescendo-magnolia-challenge/crescendo-magnolia-challenge-core/crescendo-magnolia-challenge-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/crescendo-magnolia-challenge/crescendo-magnolia-challenge-webapp/crescendo-magnolia-challenge-webapp.iml" filepath="$PROJECT_DIR$/crescendo-magnolia-challenge/crescendo-magnolia-challenge-webapp/crescendo-magnolia-challenge-webapp.iml" />
+    </modules>
+  </component>
+</project>

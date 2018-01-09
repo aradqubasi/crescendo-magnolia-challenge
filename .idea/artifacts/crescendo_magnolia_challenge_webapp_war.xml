@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="crescendo-magnolia-challenge-webapp:war">
+    <output-path>$PROJECT_DIR$/crescendo-magnolia-challenge/crescendo-magnolia-challenge-webapp/target</output-path>
+    <root id="archive" name="crescendo-magnolia-challenge-webapp-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="crescendo-magnolia-challenge-webapp:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,4 @@
+dialog: crescendo-magnolia-challenge:pages/global
+renderType: freemarker
+title: Recipes
+templateScript: /crescendo-magnolia-challenge/templates/pages/recipes/recipes.ftl

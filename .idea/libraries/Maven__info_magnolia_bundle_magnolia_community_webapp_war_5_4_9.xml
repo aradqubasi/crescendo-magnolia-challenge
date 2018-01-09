@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: info.magnolia.bundle:magnolia-community-webapp:war:5.4.9">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/info/magnolia/bundle/magnolia-community-webapp/5.4.9/magnolia-community-webapp-5.4.9.war!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/info/magnolia/bundle/magnolia-community-webapp/5.4.9/magnolia-community-webapp-5.4.9-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/info/magnolia/bundle/magnolia-community-webapp/5.4.9/magnolia-community-webapp-5.4.9-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
