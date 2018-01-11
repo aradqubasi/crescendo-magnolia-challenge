@@ -22,6 +22,49 @@ import javax.jcr.*;
 import java.util.Iterator;
 import java.util.List;
 
+// Groovy command
+//import info.magnolia.cms.core.*;
+//import info.magnolia.cms.util.*;
+//import info.magnolia.context.*;
+//import static info.magnolia.nodebuilder.Ops.*
+//@Grab('org.codehaus.groovy.modules.http-builder:http-builder:0.7' )
+//import javax.jcr.Node;
+//        import javax.jcr.RepositoryException;
+//        import javax.jcr.Session;
+//        import info.magnolia.jcr.util.NodeUtil
+//        import groovy.json.JsonSlurper
+//        import groovy.json.JsonBuilder
+//        import groovy.json.JsonOutput
+//        import groovyx.net.http.HTTPBuilder
+//        import groovyx.net.http.ContentType
+//        import groovyx.net.http.Method
+//
+//        hm = ctx.getHierarchyManager('website')
+//        root = hm.getRoot()
+//
+//        HTTPBuilder http = new HTTPBuilder('http://www.johnsonville.com/recipes.top-rated.json', ContentType.JSON);
+//        http.headers.Accept = ContentType.JSON
+//        http.parser[ContentType.JSON] = http.parser.'application/json'
+//        http.request(Method.GET) {
+//        response.success = { resp, json ->
+//        slurped = new JsonSlurper().parseText(JsonOutput.toJson(json))
+//        slurped.size()
+//        }
+//        }
+//
+//        root = hm.getRoot()
+//        slurped.each { piece ->
+//        content = root.createContent(piece.title, "mgnl:page")
+//        content.metaData.setTemplate("crescendo-magnolia-challenge:pages/recipes/recipe")
+//        content.createNodeData("title", piece.title)
+//        content.createNodeData("description", piece.description)
+//        content.createNodeData("prepTime", piece.prepTime)
+//        content.createNodeData("cookTime", piece.cookTime)
+//        content.createNodeData("servingSize", piece.servingSize)
+//        content.getProperties()
+//        }
+//        root.save()
+
 public class ImportRecipe extends BaseRepositoryCommand {
     private List<Recipe> getRecipeData(){
         RecipeClient client = new RecipeClient();
@@ -73,38 +116,38 @@ public class ImportRecipe extends BaseRepositoryCommand {
 //        assetResourceNode.setProperty(AssetNodeTypes.AssetResource.WIDTH, Long.toString(imageInfo.getWidth()));
 //        assetResourceNode.setProperty(AssetNodeTypes.AssetResource.HEIGHT, Long.toString(imageInfo.getHeight()));
 //
-        try {
-
-            {
-                DamCoreConfiguration cfg = new DamCoreConfiguration();
-                JcrAssetProvider provider = new JcrAssetProvider(cfg);
-                AssetQuery showAll = new AssetQuery.Builder().fromPath("/").build();
-                for (Iterator<Item> assets = provider.list(showAll); assets.hasNext(); ) {
-                    Item item = assets.next();
-                    if (item.isAsset()) {
-                        Asset asset = provider.getAsset(item.getItemKey());
-                    }
-                }
-            }
-
-//            Session session = MgnlContext.getJCRSession(DamConstants.WORKSPACE);
-            Session session = MgnlContext.getJCRSession("dam");
-
-            Node root = session.getRootNode();
-
-            for (Node node:NodeUtil.getNodes(root)) {
-                checkNode(node);
-                if (node.hasNodes()) {
-                    for (Node subNode:NodeUtil.getNodes(node)) {
-                        checkNode(subNode);
-                    }
-                }
-            }
-
-        } catch (RepositoryException e) {
-            AlertUtil.setException("error: ", e, ctx);
-            return false;
-        }
+//        try {
+//
+//            {
+//                DamCoreConfiguration cfg = new DamCoreConfiguration();
+//                JcrAssetProvider provider = new JcrAssetProvider(cfg);
+//                AssetQuery showAll = new AssetQuery.Builder().fromPath("/").build();
+//                for (Iterator<Item> assets = provider.list(showAll); assets.hasNext(); ) {
+//                    Item item = assets.next();
+//                    if (item.isAsset()) {
+//                        Asset asset = provider.getAsset(item.getItemKey());
+//                    }
+//                }
+//            }
+//
+////            Session session = MgnlContext.getJCRSession(DamConstants.WORKSPACE);
+//            Session session = MgnlContext.getJCRSession("dam");
+//
+//            Node root = session.getRootNode();
+//
+//            for (Node node:NodeUtil.getNodes(root)) {
+//                checkNode(node);
+//                if (node.hasNodes()) {
+//                    for (Node subNode:NodeUtil.getNodes(node)) {
+//                        checkNode(subNode);
+//                    }
+//                }
+//            }
+//
+//        } catch (RepositoryException e) {
+//            AlertUtil.setException("error: ", e, ctx);
+//            return false;
+//        }
         return true;
     }
 

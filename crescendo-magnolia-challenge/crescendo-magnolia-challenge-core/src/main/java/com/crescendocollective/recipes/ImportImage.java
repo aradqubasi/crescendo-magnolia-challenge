@@ -37,7 +37,7 @@ import java.util.Map;
 //        cm = info.magnolia.commands.CommandsManager.getInstance()
 //        command = cm.getCommand('my','import-image')
 //        ctx.setAttribute('name', 'amazing-muffin-cups-3.png', 1)
-//        ctx.setAttribute('url', 'http://www.johnsonville.com/recipe/amazing-muffin-cups/image/1885.jpg', 1)
+//        ctx.setAttribute('url', 'http://www.johnsonville.com/recipe/amazing-muffin-cups/fiveEighty/fiveEighty.jpg', 1)
 //        command.execute(ctx)
 
 public class ImportImage extends BaseRepositoryCommand {
