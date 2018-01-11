@@ -4,55 +4,129 @@ import info.magnolia.cms.core.Content;
 import info.magnolia.cms.core.HierarchyManager;
 import info.magnolia.commands.impl.BaseRepositoryCommand;
 import info.magnolia.context.Context;
+import info.magnolia.context.MgnlContext;
+import info.magnolia.dam.api.AssetProviderRegistry;
+import info.magnolia.dam.jcr.AssetNodeTypes;
+import info.magnolia.dam.jcr.DamConstants;
+import info.magnolia.dam.jcr.JcrAssetProvider;
+import info.magnolia.dam.jcr.JcrFolder;
+import info.magnolia.objectfactory.Components;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.jsoup.Connection;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import javax.imageio.ImageIO;
+import javax.jcr.Node;
+import javax.jcr.Session;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+
+/*
+        package my.commands
+        import info.magnolia.commands.*
+        cm = info.magnolia.commands.CommandsManager.getInstance()
+        command = cm.getCommand('my','import-recipies')
+        command.execute(ctx)
+*/
 
 public class ImportRecipies extends BaseRepositoryCommand {
 
     @Override
     public boolean execute(Context context) throws Exception {
-//
-//        HierarchyManager hm = context.getHierarchyManager("website");
-//        Content root = hm.getRoot();
-//
-//        CloseableHttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead
-//        HttpPost request = new HttpPost("http://www.johnsonville.com/recipes.top-rated.json'");
-//        StringEntity params =new StringEntity("details={\"name\":\"myname\",\"age\":\"20\"} ");
-//        request.addHeader("content-type", "application/json");
-//        request.setEntity(params);
-//        HttpResponse response = httpClient.execute(request);
-//
-//        response.getEntity().getContent();
-        /*
 
-        HTTPBuilder http = new HTTPBuilder("http://www.johnsonville.com/recipes.top-rated.json", ContentType.JSON);
-        http.headers.Accept = ContentType.JSON
-        http.parser[ContentType.JSON] = http.parser.'application/json'
-        http.request(Connection.Method.GET) {
-            response.success = { resp, json ->
-                    slurped = new JsonSlurper().parseText(JsonOutput.toJson(json))
-                    slurped.size()
+        int randomNum = ThreadLocalRandom.current().nextInt();
+
+        HierarchyManager hm = context.getHierarchyManager("website");
+        Content root = hm.getRoot();
+
+        String recipiesCaption = Integer.toString(randomNum) + "_recipies";
+        Content recipies = root.createContent(recipiesCaption, "mgnl:page");
+        recipies.getMetaData().setTemplate("crescendo-magnolia-challenge:pages/recipes/recipes");
+        recipies.createNodeData("title", "recipies");
+        root.save();
+
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpGet request = new HttpGet("http://www.johnsonville.com/recipes.top-rated.json");
+        request.addHeader("accept", "application/json");
+        HttpResponse response = client.execute(request);
+        String json = IOUtils.toString(response.getEntity().getContent());
+        JSONArray array = new JSONArray(json);
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject object = array.getJSONObject(i);
+            //Create recipe
+            {
+
+                String title = object.getString("title");
+                String description = object.getString("description");
+                String prepTime = object.getString("prepTime");
+                String cookTime = object.getString("cookTime");
+                String servingSize = object.getString("servingSize");
+                String recipyCaption = Integer.toString(randomNum) + "_" + title;
+                Content recipy = recipies.createContent(recipyCaption, "mgnl:page");
+                recipy.getMetaData().setTemplate("crescendo-magnolia-challenge:pages/recipes/recipe");
+                recipy.createNodeData("title", title);
+                recipy.createNodeData("description", description);
+                recipy.createNodeData("prepTime", prepTime);
+                recipy.createNodeData("cookTime", cookTime);
+                recipy.createNodeData("servingSize", servingSize);
+            }
+            //Load image to dam
+            {
+                String imageUrl = "http:" + object.getString("largeImageUrl");
+//                String imageName = Integer.toString(randomNum) + "_" + imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+                String imageName = Integer.toString(randomNum) + "_" + Integer.toString(ThreadLocalRandom.current().nextInt()) + imageUrl.substring(imageUrl.lastIndexOf("."));;
+                String extension = imageUrl.substring(imageUrl.lastIndexOf(".") + 1);
+                String mimeType = URLConnection.guessContentTypeFromName(imageName);
+                URL url = new URL(imageUrl);
+                long length = url.openConnection().getContentLength();
+                BufferedImage image = ImageIO.read(url);
+                int height = image.getHeight();
+                int width = image.getWidth();
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                ImageIO.write(image, extension, os);
+                InputStream imageStream = new ByteArrayInputStream(os.toByteArray());
+
+                // "Navigate" to the assets folder node
+                AssetProviderRegistry assetProviderRegistry = Components.getComponent(AssetProviderRegistry.class);
+                JcrAssetProvider jcrAssetProvider = (JcrAssetProvider) assetProviderRegistry.getProviderById(DamConstants.DEFAULT_JCR_PROVIDER_ID);
+                JcrFolder assetFolder = (JcrFolder) jcrAssetProvider.getRootFolder();
+                Node assetFolderNode = assetFolder.getNode();
+
+                // Create asset node
+                Node assetNode = JcrUtils.getOrAddNode(assetFolderNode, imageName, AssetNodeTypes.Asset.NAME);
+                assetNode.setProperty(AssetNodeTypes.Asset.ASSET_NAME, imageName);
+                Session session = MgnlContext.getJCRSession(DamConstants.WORKSPACE);
+
+                // Create asset resource node
+                Node assetResourceNode = JcrUtils.getOrAddNode(assetNode, AssetNodeTypes.AssetResource.RESOURCE_NAME, AssetNodeTypes.AssetResource.NAME);
+                assetResourceNode.setProperty(AssetNodeTypes.AssetResource.DATA, session.getValueFactory().createBinary(imageStream));
+                assetResourceNode.setProperty(AssetNodeTypes.AssetResource.FILENAME, imageName);
+                assetResourceNode.setProperty(AssetNodeTypes.AssetResource.EXTENSION, imageName);
+                assetResourceNode.setProperty(AssetNodeTypes.AssetResource.SIZE, Long.toString(length));
+                assetResourceNode.setProperty(AssetNodeTypes.AssetResource.MIMETYPE, mimeType);
+                assetResourceNode.setProperty(AssetNodeTypes.AssetResource.WIDTH, Long.toString(width));
+                assetResourceNode.setProperty(AssetNodeTypes.AssetResource.HEIGHT, Long.toString(height));
+
+                session.save();
             }
         }
 
-        root = hm.getRoot()
-        slurped.each { piece ->
-                content = root.createContent(piece.title, "mgnl:page")
-            content.metaData.setTemplate("crescendo-magnolia-challenge:pages/recipes/recipe")
-            content.createNodeData("title", piece.title)
-            content.createNodeData("description", piece.description)
-            content.createNodeData("prepTime", piece.prepTime)
-            content.createNodeData("cookTime", piece.cookTime)
-            content.createNodeData("servingSize", piece.servingSize)
-            content.getProperties()
-        }
-        root.save()
-        */
+        root.save();
         return false;
     }
 }

@@ -136,6 +136,7 @@
           <element id="library" level="project" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.9.12" />
           <element id="library" level="project" name="Maven: org.codehaus.jackson:jackson-jaxrs:1.9.12" />
           <element id="library" level="project" name="Maven: org.codehaus.jackson:jackson-xc:1.9.12" />
+          <element id="library" level="project" name="Maven: org.json:json:20171018" />
           <element id="library" level="project" name="Maven: info.magnolia.widgetset:magnolia-vaadin-widgetset:5.4.9" />
           <element id="library" level="project" name="Maven: info.magnolia.pages:magnolia-pages-editor-widget:5.4.8" />
           <element id="library" level="project" name="Maven: info.magnolia.pages:magnolia-pages-app:5.4.8" />

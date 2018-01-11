@@ -149,6 +149,7 @@
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-mapper-asl:1.9.12" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-jaxrs:1.9.12" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-xc:1.9.12" level="project" />
+    <orderEntry type="library" name="Maven: org.json:json:20171018" level="project" />
     <orderEntry type="library" name="Maven: info.magnolia:magnolia-empty-webapp:war:5.4.9" level="project" />
     <orderEntry type="library" name="Maven: info.magnolia.widgetset:magnolia-vaadin-widgetset:5.4.9" level="project" />
     <orderEntry type="library" name="Maven: info.magnolia.pages:magnolia-pages-editor-widget:5.4.8" level="project" />

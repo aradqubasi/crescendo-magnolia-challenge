@@ -8,7 +8,7 @@
         [@cms.area name="main" /]
 <ul>
 [#list cmsfn.children(content, "mgnl:page") as child ]
-    <li>${child.title!}</li>
+   <li> <a href="${cmsfn.link(child)}">${child.title!}</a> </li>
 [/#list]
 </ul>
 </body>
