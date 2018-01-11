@@ -66,6 +66,13 @@ public class ImportRecipies extends BaseRepositoryCommand {
         HttpResponse response = client.execute(request);
         String json = IOUtils.toString(response.getEntity().getContent());
         JSONArray array = new JSONArray(json);
+
+        // "Navigate" to the assets folder node
+        AssetProviderRegistry assetProviderRegistry = Components.getComponent(AssetProviderRegistry.class);
+        JcrAssetProvider jcrAssetProvider = (JcrAssetProvider) assetProviderRegistry.getProviderById(DamConstants.DEFAULT_JCR_PROVIDER_ID);
+        JcrFolder assetFolder = (JcrFolder) jcrAssetProvider.getRootFolder();
+        Node assetFolderNode = assetFolder.getNode();
+        Session session = MgnlContext.getJCRSession(DamConstants.WORKSPACE);
         for (int i = 0; i < array.length(); i++) {
             JSONObject object = array.getJSONObject(i);
             //Create recipe
@@ -101,16 +108,9 @@ public class ImportRecipies extends BaseRepositoryCommand {
                 ImageIO.write(image, extension, os);
                 InputStream imageStream = new ByteArrayInputStream(os.toByteArray());
 
-                // "Navigate" to the assets folder node
-                AssetProviderRegistry assetProviderRegistry = Components.getComponent(AssetProviderRegistry.class);
-                JcrAssetProvider jcrAssetProvider = (JcrAssetProvider) assetProviderRegistry.getProviderById(DamConstants.DEFAULT_JCR_PROVIDER_ID);
-                JcrFolder assetFolder = (JcrFolder) jcrAssetProvider.getRootFolder();
-                Node assetFolderNode = assetFolder.getNode();
-
                 // Create asset node
                 Node assetNode = JcrUtils.getOrAddNode(assetFolderNode, imageName, AssetNodeTypes.Asset.NAME);
                 assetNode.setProperty(AssetNodeTypes.Asset.ASSET_NAME, imageName);
-                Session session = MgnlContext.getJCRSession(DamConstants.WORKSPACE);
 
                 // Create asset resource node
                 Node assetResourceNode = JcrUtils.getOrAddNode(assetNode, AssetNodeTypes.AssetResource.RESOURCE_NAME, AssetNodeTypes.AssetResource.NAME);
@@ -122,10 +122,11 @@ public class ImportRecipies extends BaseRepositoryCommand {
                 assetResourceNode.setProperty(AssetNodeTypes.AssetResource.WIDTH, Long.toString(width));
                 assetResourceNode.setProperty(AssetNodeTypes.AssetResource.HEIGHT, Long.toString(height));
 
-                session.save();
+
             }
         }
 
+        session.save();
         root.save();
         return false;
     }
