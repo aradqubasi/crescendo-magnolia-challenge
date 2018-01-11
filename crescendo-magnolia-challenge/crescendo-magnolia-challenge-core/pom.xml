@@ -121,6 +121,22 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>info.magnolia.dam</groupId>
+          <artifactId>magnolia-dam-templating</artifactId>
+      </dependency>
+    <dependency>
+      <groupId>info.magnolia.templating</groupId>
+      <artifactId>magnolia-templating-essentials-models</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.categorization</groupId>
+      <artifactId>magnolia-categorization</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.restclient</groupId>
+      <artifactId>magnolia-resteasy-client</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

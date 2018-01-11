@@ -1,16 +1,25 @@
 package com.crescendocollective.recipes;
 
 import info.magnolia.cms.util.AlertUtil;
-import info.magnolia.context.Context;
 import info.magnolia.commands.impl.BaseRepositoryCommand;
+import info.magnolia.context.Context;
 import info.magnolia.context.MgnlContext;
-import info.magnolia.jcr.nodebuilder.NodeBuilder;
+import info.magnolia.dam.api.Asset;
+import info.magnolia.dam.api.AssetProviderRegistry;
+import info.magnolia.dam.api.AssetQuery;
+import info.magnolia.dam.api.Item;
+import info.magnolia.dam.core.config.DamCoreConfiguration;
+import info.magnolia.dam.jcr.AssetNodeTypes;
+import info.magnolia.dam.jcr.DamConstants;
+import info.magnolia.dam.jcr.JcrAssetProvider;
+import info.magnolia.dam.jcr.JcrFolder;
+import info.magnolia.jcr.util.NodeUtil;
+import info.magnolia.objectfactory.Components;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.jackrabbit.commons.JcrUtils;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
+import javax.jcr.*;
+import java.util.Iterator;
 import java.util.List;
 
 public class ImportRecipe extends BaseRepositoryCommand {
@@ -19,32 +28,79 @@ public class ImportRecipe extends BaseRepositoryCommand {
         List<Recipe> recipeList = client.getRecipes();
         return recipeList;
     }
+
+    private void checkNode(Node node) throws RepositoryException {
+        System.out.print(NodeUtil.getName(node));
+        System.out.print(NodeUtil.getNodePathIfPossible(node));
+        System.out.print(node.getIdentifier());
+
+//        for (Iterator<Property> properties = node.getReferences(); properties.hasNext(); ) {
+//            Property property = properties.next();
+//            String name = property.getName();
+//            int type = property.getType();
+//            Value value = property.getValue();
+//            //value.
+//            //property.get
+//            System.out.print(name);
+//        }
+
+        String nname = node.getName();
+        if (node.getName().equals("carrot-3x.png")) {
+            Property data = node.getProperty("jcr:data");
+            String dname = data.getName();
+        }
+
+        for (Iterator<Property> properties = node.getProperties(); properties.hasNext(); ) {
+            Property property = properties.next();
+            String name = property.getName();
+            int type = property.getType();
+            Value value = property.getValue();
+            //value.
+            //property.get
+            System.out.print(name);
+        }
+    }
+
     @Override
     public boolean execute(Context ctx) {
+
+//        Node assetResourceNode = JcrUtils.getOrAddNode(assetNode, AssetNodeTypes.AssetResource.RESOURCE_NAME, AssetNodeTypes.AssetResource.NAME);
+//        assetResourceNode.setProperty(AssetNodeTypes.AssetResource.DATA, session.getValueFactory().createBinary(multipartFile.getInputStream()));
+//        assetResourceNode.setProperty(AssetNodeTypes.AssetResource.FILENAME, newFileName);
+//        assetResourceNode.setProperty(AssetNodeTypes.AssetResource.EXTENSION, fileExtension);
+//        assetResourceNode.setProperty(AssetNodeTypes.AssetResource.SIZE, Long.toString(multipartFile.getSize()));
+//        assetResourceNode.setProperty(AssetNodeTypes.AssetResource.MIMETYPE, imageInfo.getMimeType());
+//        assetResourceNode.setProperty(AssetNodeTypes.AssetResource.WIDTH, Long.toString(imageInfo.getWidth()));
+//        assetResourceNode.setProperty(AssetNodeTypes.AssetResource.HEIGHT, Long.toString(imageInfo.getHeight()));
+//
         try {
 
-            String parentPath = StringUtils.substringBeforeLast(getPath(), "/");
-            String label = StringUtils.substringAfterLast(getPath(), "/");
-
-            Node parentNode = MgnlContext.getJCRSession(this.getRepository()).getNode(parentPath);
-
-            parentNode.addNode("Imported Recipes", "mgnl:page");
-            Node recipesNode = parentNode.getNode("Imported Recipes");
-            recipesNode.setProperty("Title", "Imported Recipes");
-            parentNode.getSession().save();
-
-            for (Recipe recipe:getRecipeData()) {
-                recipesNode.addNode(recipe.getTitle(), "mgnl:page");
-                Node recipeNode = recipesNode.getNode(recipe.getTitle());
-                recipeNode.setProperty("Title", recipe.getTitle());
-                recipeNode.setProperty("Description", recipe.getDescription());
-                recipeNode.setProperty("PrepTime", recipe.getPrepTime());
-                recipeNode.setProperty("CookTime", recipe.getCookTime());
-                recipeNode.setProperty("ServingSize", recipe.getServingSize());
-                recipesNode.getSession().save();
+            {
+                DamCoreConfiguration cfg = new DamCoreConfiguration();
+                JcrAssetProvider provider = new JcrAssetProvider(cfg);
+                AssetQuery showAll = new AssetQuery.Builder().fromPath("/").build();
+                for (Iterator<Item> assets = provider.list(showAll); assets.hasNext(); ) {
+                    Item item = assets.next();
+                    if (item.isAsset()) {
+                        Asset asset = provider.getAsset(item.getItemKey());
+                    }
+                }
             }
 
-            parentNode.getSession().save();
+//            Session session = MgnlContext.getJCRSession(DamConstants.WORKSPACE);
+            Session session = MgnlContext.getJCRSession("dam");
+
+            Node root = session.getRootNode();
+
+            for (Node node:NodeUtil.getNodes(root)) {
+                checkNode(node);
+                if (node.hasNodes()) {
+                    for (Node subNode:NodeUtil.getNodes(node)) {
+                        checkNode(subNode);
+                    }
+                }
+            }
+
         } catch (RepositoryException e) {
             AlertUtil.setException("error: ", e, ctx);
             return false;

@@ -33,6 +33,7 @@
  */
 package com.crescendocollective.config;
 
+import info.magnolia.dam.templating.functions.DamTemplatingFunctions;
 import info.magnolia.imaging.functions.ImagingTemplatingFunctions;
 import info.magnolia.module.blossom.view.SiteAwareFreemarkerTemplateViewRenderer;
 import info.magnolia.module.blossom.view.SiteAwareFreemarkerTemplateViewRendererFactoryBean;
@@ -73,14 +74,12 @@ public class SiteAwareFreemarkerRenderingConfiguration {
         viewRenderer.addContextAttribute("cmsfn", TemplatingFunctions.class);
         viewRenderer.addContextAttribute("imgfn", ImagingTemplatingFunctions.class);
         viewRenderer.addContextAttribute("sitefn", SiteFunctions.class);
-/*
-        Uncomment these if you're using DAM, MTE, Categorization or the REST module.
 
         viewRenderer.addContextAttribute("damfn", DamTemplatingFunctions.class);
         viewRenderer.addContextAttribute("searchfn", info.magnolia.templating.functions.SearchTemplatingFunctions.class);
         viewRenderer.addContextAttribute("catfn", info.magnolia.module.categorization.functions.CategorizationTemplatingFunctions.class);
         viewRenderer.addContextAttribute("restfn", info.magnolia.resteasy.client.functions.RestTemplatingFunctions.class);
-*/
+
         return viewRenderer;
     }
 }
